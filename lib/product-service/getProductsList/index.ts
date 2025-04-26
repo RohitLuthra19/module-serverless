@@ -1,4 +1,4 @@
-import { productData } from "../../mock/product";
+const { productData } = require("/opt/nodejs/productsData");
 
 export const handler = async (event: any) => {
   // Use 'any' for event, or define a type

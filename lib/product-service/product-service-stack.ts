@@ -8,6 +8,13 @@ export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Create the Lambda Layer
+    const sharedLayer = new lambda.LayerVersion(this, "SharedLayer", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "../shared-layer")),
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
+      description: "A layer for shared product data",
+    });
+
     // Lambda function for getProductsList
     const getProductsListLambda = new lambda.Function(
       this,
@@ -15,7 +22,8 @@ export class ProductServiceStack extends cdk.Stack {
       {
         runtime: lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
-        code: lambda.Code.fromAsset(path.join(__dirname, "getProductsList.js")),
+        code: lambda.Code.fromAsset(path.join(__dirname, "getProductsList")), 
+        layers: [sharedLayer],
       }
     );
 
@@ -26,7 +34,8 @@ export class ProductServiceStack extends cdk.Stack {
       {
         runtime: lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
-        code: lambda.Code.fromAsset(path.join(__dirname, "getProductsById.js")),
+        code: lambda.Code.fromAsset(path.join(__dirname, "getProductsById")), 
+        layers: [sharedLayer],
       }
     );
 
