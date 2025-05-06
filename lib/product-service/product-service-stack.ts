@@ -87,22 +87,32 @@ export class ProductServiceStack extends cdk.Stack {
       }
     ); */
 
-
-    const createProductLambda = new NodejsFunction(this, 'CreateProductFunction', {
-      entry: path.join(__dirname, './createProduct/index.ts'), 
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      timeout: cdk.Duration.seconds(10),
-      environment: {
-        PRODUCTS_TABLE_NAME: productsTable.tableName,
-      },
-    });
+    const createProductLambda = new NodejsFunction(
+      this,
+      "CreateProductFunction",
+      {
+        entry: path.join(__dirname, "./createProduct/index.ts"),
+        handler: "handler",
+        runtime: lambda.Runtime.NODEJS_18_X,
+        timeout: cdk.Duration.seconds(10),
+        environment: {
+          PRODUCTS_TABLE_NAME: productsTable.tableName,
+          STOCK_TABLE_NAME: stockTable.tableName,
+        },
+      }
+    );
 
     // Grant Lambda permissions to write to the Products table
     productsTable.grantWriteData(createProductLambda);
+    stockTable.grantWriteData(createProductLambda);
 
     // API Gateway
-    const api = new apigateway.RestApi(this, "ProductServiceAPI");
+    const api = new apigateway.RestApi(this, "ProductServiceAPI", {
+      defaultCorsPreflightOptions: {
+        allowOrigins: ["http://localhost:3000"],
+        allowMethods: ["GET", "POST", "OPTIONS"],
+      },
+    });
     const productsResource = api.root.addResource("products");
     // Add a resource for getting all products
     // GET /products -> getProductsList
