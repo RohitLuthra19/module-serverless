@@ -1,6 +1,6 @@
-import { Handler } from 'aws-lambda';
+import { Handler } from "aws-lambda";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const dynamoDB = new DynamoDBClient({ region: process.env.AWS_REGION });
 const productsTableName = process.env.PRODUCTS_TABLE_NAME as string;
@@ -48,7 +48,7 @@ export const handler: Handler = async (event) => {
     console.error("Error creating product:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal Server Error", error }),
+      body: JSON.stringify({ message: "Internal Server Error!", error }),
     };
   }
 };

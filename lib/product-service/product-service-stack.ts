@@ -4,6 +4,7 @@ import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import { Construct } from "constructs";
 import * as path from "path";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -72,7 +73,7 @@ export class ProductServiceStack extends cdk.Stack {
     stockTable.grantReadData(getProductsByIdLambda);
 
     // Lambda function for createProduct
-    const createProductLambda = new lambda.Function(
+    /* const createProductLambda = new lambda.Function(
       this,
       "CreateProductFunction",
       {
@@ -82,8 +83,20 @@ export class ProductServiceStack extends cdk.Stack {
         environment: {
           PRODUCTS_TABLE_NAME: productsTable.tableName,
         },
+        timeout: cdk.Duration.seconds(10),
       }
-    );
+    ); */
+
+
+    const createProductLambda = new NodejsFunction(this, 'CreateProductFunction', {
+      entry: path.join(__dirname, './createProduct/index.ts'), 
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        PRODUCTS_TABLE_NAME: productsTable.tableName,
+      },
+    });
 
     // Grant Lambda permissions to write to the Products table
     productsTable.grantWriteData(createProductLambda);
