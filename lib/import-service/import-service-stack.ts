@@ -12,12 +12,12 @@ function createImportBucket(scope: cdk.Stack) {
     const importBucket = new s3.Bucket(scope, 'ImportBucket', {
         bucketName: 'import-service-bucket-' + scope.account + '-' + scope.region,
         versioned: true,
-        cors: [ // Add CORS configuration here
+        cors: [ 
                 {
-                    allowedOrigins: ['*'], //  Replace '*' with your actual domain in production
-                    allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET], // Allow PUT and GET
-                    allowedHeaders: ['Content-Type'], //  Important:  Specify the headers your client uses
-                    maxAge: 3000, // Optional: How long browsers can cache the preflight response
+                    allowedOrigins: ['*'], 
+                    allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET],
+                    allowedHeaders: ['Content-Type'],
+                    maxAge: 3000,
                 },
             ],
     });
@@ -49,16 +49,6 @@ function createImportProductsFileLambda(scope: cdk.Stack, importBucket: s3.Bucke
 }
 
 function createImportFileParserLambda(scope: cdk.Stack, importBucket: s3.Bucket, uploadedFolderName: string, parsedFolderName: string) {
-    /* const lambdaFn = new lambda.Function(scope, 'ImportFileParserFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
-        handler: 'index.handler',
-        code: lambda.Code.fromAsset(path.join(__dirname, 'importFileParser')),
-        environment: {
-            BUCKET_NAME: importBucket.bucketName,
-            UPLOADED_FOLDER: uploadedFolderName,
-            PARSED_FOLDER: parsedFolderName,
-        },
-    }); */
     const lambdaFn = new NodejsFunction(scope, 'ImportFileParserFunction', {
         runtime: lambda.Runtime.NODEJS_18_X,
         entry: path.join(__dirname, "./importFileParser/index.ts"),

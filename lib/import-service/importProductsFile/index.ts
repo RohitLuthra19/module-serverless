@@ -24,7 +24,7 @@ export const handler = async (event: {
     const putObjectCommand = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
-      ContentType: "text/csv", // or let the frontend send the type
+      ContentType: "text/csv",
     });
 
     const signedUrl = await getSignedUrl(s3Client, putObjectCommand, {

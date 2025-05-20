@@ -1,6 +1,5 @@
 const awsSdkMock = require('aws-sdk-mock');
 
-// Set env vars BEFORE importing the handler!
 process.env.BUCKET_NAME = 'test-bucket';
 process.env.UPLOADED_FOLDER = 'uploaded';
 
@@ -20,12 +19,10 @@ describe('importProductsFile Lambda', () => {
   });
 
   it('should return signed URL if file name is provided', async () => {
-    // Mock getSignedUrl from @aws-sdk/s3-request-presigner
     jest.mock('@aws-sdk/s3-request-presigner', () => ({
       getSignedUrl: jest.fn().mockResolvedValue('https://signed-url')
     }));
 
-    // Re-require handler to pick up the mock
     const { handler: mockedHandler } = require('../lib/import-service/importProductsFile');
     const event = { queryStringParameters: { name: 'test.csv' } };
     const result = await mockedHandler(event);
